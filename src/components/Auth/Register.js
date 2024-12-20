@@ -27,11 +27,42 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [nameError, setNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate();
 
   const classes = useStyles();
+
   const handleRegister = async (e) => {
     e.preventDefault();
+
+    setNameError("");
+    setEmailError("");
+    setPasswordError("");
+    setError(null);
+
+    if (!name) {
+      setNameError("Name is required");
+      return;
+    }
+
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (!email) {
+      setEmailError("Email is required");
+      return;
+    } else if (!emailRegex.test(email)) {
+      setEmailError("Enter a valid email address");
+      return;
+    }
+
+    if (!password) {
+      setPasswordError("Password is required");
+      return;
+    } else if (password.length < 6) {
+      setPasswordError("Password must be at least 6 characters");
+      return;
+    }
     try {
       const response = await register(name, email, password);
       if (response.success) {
@@ -44,7 +75,7 @@ const Register = () => {
 
   return (
     <Container maxWidth="xs">
-      <Box classessName={classes.container}>
+      <Box className={classes.container}>
         <Paper elevation={3} className={classes.paper}>
           <Typography variant="h4">Register</Typography>
           <form onSubmit={handleRegister}>
@@ -54,6 +85,8 @@ const Register = () => {
               onChange={(e) => setName(e.target.value)}
               fullWidth
               margin="normal"
+              error={!!nameError}
+              helperText={nameError}
             />
             <TextField
               label="Email"
@@ -62,6 +95,8 @@ const Register = () => {
               onChange={(e) => setEmail(e.target.value)}
               fullWidth
               margin="normal"
+              error={!!emailError}
+              helperText={emailError}
             />
             <TextField
               label="Password"
@@ -70,6 +105,8 @@ const Register = () => {
               onChange={(e) => setPassword(e.target.value)}
               fullWidth
               margin="normal"
+              error={!!passwordError}
+              helperText={passwordError}
             />
             <Button type="submit" variant="contained" color="primary">
               Register
